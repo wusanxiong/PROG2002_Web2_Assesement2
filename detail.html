@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fundraiser Details</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f7fafc;
+        margin: 0;
+        padding: 0;
+      }
+
+      header {
+        background-color: #1e3a8a;
+        color: white;
+        padding: 2px;
+        text-align: center;
+      }
+
+      header h1 {
+        font-size: 2.5rem;
+        font-weight: bold;
+      }
+
+      nav {
+        background-color: white;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 10px 0;
+        margin-bottom: 20px;
+      }
+
+      nav a {
+        color: #1e3a8a;
+        text-decoration: none;
+        padding: 0 20px;
+        font-size: 1.1rem;
+        font-weight: bold;
+      }
+
+      nav a:hover {
+        text-decoration: underline;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      #fundraiser-details {
+        background-color: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      #fundraiser-details h2 {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      #fundraiser-details p {
+        margin: 10px 0;
+        font-size: 1rem;
+        color: #4a5568;
+      }
+
+      #fundraiser-details p:nth-child(5) {
+        margin-top: 20px;
+        font-size: 1.1rem;
+        color: #2d3748;
+      }
+
+      button {
+        background-color: #38a169;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      button:hover {
+        background-color: #2f855a;
+      }
+
+      #donate-message {
+        margin-top: 10px;
+        color: #e53e3e;
+        font-size: 1rem;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Fundraising Platform</h1>
+    </header>
+
+    <nav>
+      <div class="container">
+        <a href="index.html">Home</a>
+        <a href="search.html">Search Fundraisers</a>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div id="fundraiser-details"></div>
+
+      <div class="mt-6">
+        <button id="donate-button" style="margin-top: 20px">Donate</button>
+        <div id="donate-message">This feature is under development.</div>
+      </div>
+    </div>
+
+    <script>
+      const urlParams = new URLSearchParams(window.location.search);
+      const fundraiserId = urlParams.get("id");
+
+      fetch(`http://localhost:5555/fundraisers/${fundraiserId}`)
+        .then((response) => {
+          if (!response.ok) throw new Error("Fundraiser not found");
+          return response.json();
+        })
+        .then((fundraiser) => {
+          const detailsContainer =
+            document.getElementById("fundraiser-details");
+          detailsContainer.innerHTML = `
+            <h2>${fundraiser.title}</h2>
+            <p>Organizer: ${fundraiser.organizer}</p>
+            <p>City: ${fundraiser.city}</p>
+            <p>Target Funding: $${fundraiser.target_funding}</p>
+            <p>Current Funding: $${fundraiser.current_funding}</p>
+            <p>This fundraiser aims to achieve significant change and support in the community.</p>
+          `;
+        })
+        .catch((error) => {
+          const detailsContainer =
+            document.getElementById("fundraiser-details");
+          detailsContainer.innerHTML = `<p style="color: #e53e3e;">Error: ${error.message}</p>`;
+        });
+
+      document.getElementById("donate-button").addEventListener("click", () => {
+        document.getElementById("donate-message").style.display = "block";
+      });
+    </script>
+  </body>
+</html>

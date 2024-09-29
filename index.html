@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fundraising Platform</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f7fafc;
+        margin: 0;
+        padding: 0;
+      }
+
+      header {
+        background-color: #1e3a8a;
+        color: white;
+        padding: 2px;
+        text-align: center;
+      }
+
+      header h1 {
+        font-size: 2.5rem;
+        font-weight: bold;
+      }
+
+      nav {
+        background-color: white;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 10px 0;
+      }
+
+      nav a {
+        color: #1e3a8a;
+        text-decoration: none;
+        padding: 0 20px;
+        font-size: 1.1rem;
+        font-weight: bold;
+      }
+
+      nav a:hover {
+        text-decoration: underline;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      h2 {
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+      }
+
+      p {
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+      }
+
+      .card {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      }
+
+      .card h3 {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      .card p {
+        margin: 5px 0;
+        font-size: 1rem;
+      }
+
+      .card button {
+        background-color: #1e3a8a;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1rem;
+        margin-top: 10px;
+      }
+
+      .card button:hover {
+        background-color: #2563eb;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Fundraising Platform</h1>
+    </header>
+
+    <nav>
+      <div class="container">
+        <a href="index.html">Home</a>
+        <a href="search.html">Search Fundraisers</a>
+      </div>
+    </nav>
+
+    <div class="container">
+      <h2>Welcome to Our Fundraising Platform!</h2>
+      <p>
+        Join us in making a difference. Explore our active fundraisers and help
+        support causes that matter to you!
+      </p>
+
+      <h2>Active Fundraisers</h2>
+      <div id="fundraiser-list"></div>
+    </div>
+
+    <script>
+      fetch("http://localhost:5555/fundraisers")
+        .then((response) => response.json())
+        .then((fundraisers) => {
+          const fundraiserList = document.getElementById("fundraiser-list");
+          fundraiserList.innerHTML = "";
+          fundraisers.forEach((fundraiser) => {
+            fundraiserList.innerHTML += `
+                        <div class="card">
+                            <h3>${fundraiser.title}</h3>
+                            <p>Organizer: ${fundraiser.organizer}</p>
+                            <p>City: ${fundraiser.city}</p>
+                            <p>Target Funding: $${fundraiser.target_funding}</p>
+                            <p>Current Funding: $${fundraiser.current_funding}</p>
+                            <button onclick="viewDetails(${fundraiser.fundraiser_id})">View Details</button>
+                        </div>
+                    `;
+          });
+        })
+        .catch((error) => console.error("Error fetching fundraisers:", error));
+
+      function viewDetails(id) {
+        window.location.href = `detail.html?id=${id}`;
+      }
+    </script>
+  </body>
+</html>

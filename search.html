@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Search Fundraisers</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f7fafc;
+        margin: 0;
+        padding: 0;
+      }
+
+      header {
+        background-color: #1e3a8a;
+        color: white;
+        padding: 2px;
+        text-align: center;
+      }
+
+      header h1 {
+        font-size: 2rem;
+        font-weight: bold;
+      }
+
+      nav {
+        background-color: white;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 10px;
+      }
+
+      nav a {
+        color: #1e3a8a;
+        text-decoration: none;
+        padding: 0 10px;
+        font-weight: bold;
+      }
+
+      nav a:hover {
+        text-decoration: underline;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      form {
+        margin-bottom: 20px;
+      }
+
+      input,
+      select {
+        border: 1px solid #d1d5db;
+        padding: 10px;
+        border-radius: 5px;
+        margin-right: 10px;
+        font-size: 1rem;
+      }
+
+      button {
+        background-color: #1e3a8a;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1rem;
+      }
+
+      button:hover {
+        background-color: #2563eb;
+      }
+
+      .fundraiser {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+
+      .fundraiser h3 {
+        font-size: 1.5rem;
+        font-weight: bold;
+      }
+
+      .fundraiser p {
+        margin: 5px 0;
+      }
+
+      .fundraiser button {
+        margin-top: 10px;
+      }
+
+      .no-results {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Search Fundraisers</h1>
+    </header>
+
+    <nav>
+      <div class="container">
+        <a href="index.html">Home</a>
+        <a href="search.html">Search Fundraisers</a>
+      </div>
+    </nav>
+
+    <div class="container">
+      <form id="search-form">
+        <input type="text" id="organizer" placeholder="Organizer" />
+        <input type="text" id="city" placeholder="City" />
+        <select id="category">
+          <option value="">Select Category</option>
+          <option value="1">Medical</option>
+          <option value="2">Education</option>
+          <option value="3">Social Impact</option>
+        </select>
+        <button type="submit">Search</button>
+      </form>
+
+      <div id="fundraiser-list"></div>
+    </div>
+
+    <script>
+      document
+        .getElementById("search-form")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+          const organizer = document.getElementById("organizer").value;
+          const city = document.getElementById("city").value;
+          const category = document.getElementById("category").value;
+
+          let query = "http://localhost:5555/search?";
+          if (organizer) query += `organizer=${encodeURIComponent(organizer)}&`;
+          if (city) query += `city=${encodeURIComponent(city)}&`;
+          if (category) query += `category=${encodeURIComponent(category)}&`;
+          query = query.slice(0, -1);
+
+          fetch(query)
+            .then((response) => {
+              if (response.status === 404) {
+                throw new Error("No financing lender found");
+              }
+              return response.json();
+            })
+            .then((fundraisers) => {
+              const fundraiserList = document.getElementById("fundraiser-list");
+              fundraiserList.innerHTML = "";
+              if (fundraisers.length === 0) {
+                fundraiserList.innerHTML = `
+                  <div class="no-results">No financing lender found</div>
+                `;
+              } else {
+                fundraisers.forEach((fundraiser) => {
+                  fundraiserList.innerHTML += `
+                    <div class="fundraiser">
+                      <h3>${fundraiser.title}</h3>
+                      <p>Organizer: ${fundraiser.organizer}</p>
+                      <p>City: ${fundraiser.city}</p>
+                      <p>Target Funding: $${fundraiser.target_funding}</p>
+                      <p>Current Funding: $${fundraiser.current_funding}</p>
+                      <button onclick="viewDetails(${fundraiser.fundraiser_id})">View Details</button>
+                    </div>
+                  `;
+                });
+              }
+            })
+            .catch((error) => {
+              const fundraiserList = document.getElementById("fundraiser-list");
+              fundraiserList.innerHTML = `
+                <div class="no-results">${error.message}</div>
+              `;
+            });
+        });
+
+      function viewDetails(id) {
+        window.location.href = `detail.html?id=${id}`;
+      }
+    </script>
+  </body>
+</html>
